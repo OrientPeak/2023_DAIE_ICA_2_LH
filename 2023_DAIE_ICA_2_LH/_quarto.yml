@@ -1,0 +1,19 @@
+project:
+  type: website
+
+website:
+  title: "2023_DAIE_ICA_2_LH"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+editor: visual
+
