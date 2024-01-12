@@ -1,7 +1,60 @@
 ---
 title: "Interactive Tables"
+format: dashboard
+server: shiny
 ---
 
 ```{r}
-1 + 1
+#| context: server
 ```
+
+## Download and load libraries
+
+```{r}
+if(!require("rsconnect"))
+  install.packages("rsconnect")
+if(!require("DBI"))
+  install.packages("DBI")
+if(!require("dplyr"))
+  install.packages("dplyr")
+if(!require("tidyverse"))
+  install.packages("tidyverse")
+if(!require("DT"))
+  install.packages("DT")
+if(!require("plotly"))
+  install.packages("plotly")
+
+library(DBI)
+library(dplyr)
+library(tidyverse)
+library(knitr)
+library(DT)
+```
+
+## Connection to the database
+
+```{r}
+conn <- dbConnect(RSQLite::SQLite(), dbname = "ICA_2023.sqlite")
+```
+
+## Dataframe creation
+
+```{r}
+T1 <- dbGetQuery(conn, "SELECT expectedcompletiondate, actualcompletiondate FROM timelines WHERE actualcompletiondate IS NOT NULL;")
+T1Dataframe <- as.data.frame(T1)
+
+T2 <- dbGetQuery(conn, "SELECT developerId, COUNT(assetId) FROM assetsdevelopers GROUP BY developerId;")
+T2Dataframe <- as.data.frame(T2)
+
+```
+
+```{r}
+#| title: table 1
+datatable(T1Dataframe)
+```
+
+```{r}
+#| title: table 2
+datatable(T2Dataframe)
+```
+
