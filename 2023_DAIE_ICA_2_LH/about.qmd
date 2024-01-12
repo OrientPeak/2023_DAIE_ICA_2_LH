@@ -1,8 +1,6 @@
 ---
-title: "About"
+title: "Interactive Tables"
 ---
-
-About this site
 
 ```{r}
 1 + 1

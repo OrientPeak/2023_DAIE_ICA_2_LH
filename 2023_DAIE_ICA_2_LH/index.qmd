@@ -2,10 +2,119 @@
 title: "2023_DAIE_ICA_2_LH"
 ---
 
-This is a Quarto website.
-
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+### Clear console on each execute and set chunk default to not show code
 
 ```{r}
-1 + 1
+cat('\014')
+```
+
+## Download and load libraries
+
+```{r}
+if(!require("DBI"))
+  install.packages("DBI")
+if(!require("dplyr"))
+  install.packages("dplyr")
+if(!require("tidyverse"))
+  install.packages("tidyverse")
+if(!require("DT"))
+  install.packages("DT")
+
+library(DBI)
+library(dplyr)
+library(tidyverse)
+library(knitr)
+library(DT)
+```
+
+## Connection to the database
+
+```{r}
+conn <- dbConnect(RSQLite::SQLite(), dbname = "ICA_2023.sqlite")
+```
+
+## Part 1
+
+### Table 1
+
+```{r}
+T1 <- dbGetQuery(conn, "SELECT * FROM projects;")
+
+datatable(
+  T1,
+  options = list(
+    pageLength = 5,
+    dom = 'lBfrtip',
+    lengthMenu = list(c(5, 10, 15, -1), c('5', '10', '15', 'All')),
+    autoWidth = TRUE),
+  rownames = FALSE) %>%
+  formatStyle(
+    columns = c('ProjectID', 'ProjectName', 'StartDate', 'EndDate', 'Budget', 'Status', 'CustomerID'),
+    target = 'cell',
+    color = 'lightblue',
+    backgroundColor = 'lightgray'
+  )
+```
+
+### Table 2
+
+```{r}
+T2 <- dbGetQuery(conn, "SELECT * FROM developers;")
+
+datatable(
+  T2,
+  options = list(
+    pageLength = 5,
+    dom = 'lBfrtip',
+    lengthMenu = list(c(5, 10, 15, -1), c('5', '10', '15', 'All')),
+    autoWidth = TRUE),
+  rownames = FALSE) %>%
+  formatStyle(
+    columns = c('DeveloperID', 'Name', 'Specialization', 'ExperienceYears'),
+    target = 'cell',
+    color = 'lightblue',
+    backgroundColor = 'lightgray'
+  )
+```
+
+### Table 3
+
+```{r}
+T3 <- dbGetQuery(conn, "SELECT * FROM customers;")
+
+datatable(
+  T3,
+  options = list(
+    pageLength = 5,
+    dom = 'lBfrtip',
+    lengthMenu = list(c(5, 10, 15, -1), c('5', '10', '15', 'All')),
+    autoWidth = TRUE),
+  rownames = FALSE) %>%
+  formatStyle(
+    columns = c('CustomerID', 'CustomerName', 'CustomerCity', 'CustomerCountry'),
+    target = 'cell',
+    color = 'lightblue',
+    backgroundColor = 'lightgray'
+  )
+```
+
+### Table 4
+
+```{r}
+T4 <- dbGetQuery(conn, "SELECT * FROM projectdevelopers;")
+
+datatable(
+  T4,
+  options = list(
+    pageLength = 5,
+    dom = 'lBfrtip',
+    lengthMenu = list(c(5, 10, 15, -1), c('5', '10', '15', 'All')),
+    autoWidth = TRUE),
+  rownames = FALSE) %>%
+  formatStyle(
+    columns = c('ProjectID', 'DeveloperID', 'Role'),
+    target = 'cell',
+    color = 'lightblue',
+    backgroundColor = 'lightgray'
+  )
 ```
