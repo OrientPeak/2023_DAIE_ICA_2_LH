@@ -23,12 +23,18 @@ if(!require("DT"))
   install.packages("DT")
 if(!require("plotly"))
   install.packages("plotly")
+if(!require("esquisse"))
+  install.packages("esquisse")
+if(!require("ggplot2"))
+  install.packages("ggplot2")
 
 library(DBI)
 library(dplyr)
 library(tidyverse)
 library(knitr)
 library(DT)
+library(esquisse)
+library(ggplot2)
 ```
 
 ## Connection to the database
@@ -40,7 +46,9 @@ conn <- dbConnect(RSQLite::SQLite(), dbname = "ICA_2023.sqlite")
 ## Dataframe creation
 
 ```{r}
-T1 <- dbGetQuery(conn, "SELECT expectedcompletiondate, actualcompletiondate FROM timelines WHERE actualcompletiondate IS NOT NULL;")
+#Queries to make dataframes
+
+T1 <- dbGetQuery(conn, "SELECT projectId, type FROM assets GROUP BY type;")
 T1Dataframe <- as.data.frame(T1)
 
 T2 <- dbGetQuery(conn, "SELECT developerId, COUNT(assetId) FROM assetsdevelopers GROUP BY developerId;")
@@ -48,13 +56,40 @@ T2Dataframe <- as.data.frame(T2)
 
 ```
 
-```{r}
-#| title: table 1
-datatable(T1Dataframe)
-```
+# Table and Plot 1
 
 ```{r}
-#| title: table 2
+#| title: Table 1
+datatable(T1Dataframe)
+```
+```{r}
+#| title: Plot 1
+P1 <- ggplot(T1) +
+  aes(x = Type, y = ProjectID, colour = Type) +
+  geom_point(shape = "diamond", size = 4L) +
+  scale_color_hue(direction = 1) +
+  theme_linedraw() +
+  theme(legend.position = "left")
+
+P1 + theme(
+  axis.text.x = element_blank(), panel.background = element_rect(fill = "lightgray"))
+```
+
+# Table and Plot 2
+
+```{r}
+#| title: Table 2
 datatable(T2Dataframe)
+```
+```{r}
+#| title: Plot 2
+P2 <- ggplot(T2) +
+  aes(x = DeveloperID, y = `COUNT(assetId)`) +
+  geom_point(shape = "diamond", size = 4L, colour = "orange") +
+  labs(y = "AssetsAmnt") +
+  scale_x_continuous(breaks = seq(0, 12, 1)) +
+  theme_minimal()
+
+P2 + theme(panel.background = element_rect(fill = "lightgray"))
 ```
 
